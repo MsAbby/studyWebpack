@@ -1,16 +1,16 @@
 const ESLintWebpackPlugin = require("eslint-webpack-plugin");
 const path = require("path");
-const Eslintrc = require("./.eslintrc");
+const Eslintrc = require("../.eslintrc");
 const HtmlWebpckPlugin = require('html-webpack-plugin')
 
 module.exports = {
     // 入口
-    entry: './src/main.js', // 相对路径
+    entry: './src/main.js', // 相对路径(相对于运行代码的目录)
     // 出口
     output: {
         // 文价输出路径
         // __dirname, nodejs 的变量， 代表当前文件的文件夹目录
-        path: path.resolve(__dirname, 'dist'),
+        path: path.resolve(__dirname, '../dist'),
         filename: 'js/main.js',
         clean: true, // 打包前， 将path整个目录清空
     },
@@ -67,9 +67,11 @@ module.exports = {
     plugins: [
         new ESLintWebpackPlugin({
             // 检测哪些文件
-            context: path.resolve(__dirname, 'src')
+            context: path.resolve(__dirname, '../src')
         }),
-        new HtmlWebpckPlugin()
+        new HtmlWebpckPlugin({
+            template: path.resolve(__dirname, '../public/index.html')
+        })
     ],
 
     // 开启服务器
