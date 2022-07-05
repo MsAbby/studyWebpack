@@ -180,7 +180,7 @@ plugins: [
 1. 下载包： npm install postcss-loader postcss postcss-preset-env -D<br/>
 2. 配置为止： 在css-loader 后面， 在less/scss/stylus-loader前面<br/>
 3. 对象形式： <br/>
-````
+````js
 {
     test: /\.less$/, 
     // use: ['style-loader', 'css-loader', 'less-loader'] // 执行顺序「从右到左」
@@ -202,7 +202,7 @@ plugins: [
 
 # 生产模式 - 封装loader函数（重复代码处理）
 1. 抽取公共代码， 封装成函数
-````
+````js
 // 封装处理样式的loader
 function getStyleLoader(params) {
     return [
@@ -233,7 +233,7 @@ module: {
 1. 下载： npm install css-minimizer-webpack-plugin -D <br>
 2. 引用  <br>
 3. plugin调用<br>
-````
+````js
 const CssMinimizerWebpckPlugin = require('css-minimizer-webpack-plugin')
 
 plugins: [
@@ -255,3 +255,28 @@ plugins: [
 > 4. 优化 「 运行代码性能 」
 > 为什么 - 是什么 - 怎么用
 
+# 1. SourceMap
+
+1. 为什么？    代码构建后，如果文件出错，找不到具体的行和列
+2. 是什么？    生成一个map文件， 内容是「 源代码 」和 「 构建后的代码 」 每一行和每一列 的映射关系；<br>
+3. 解决什么？   构建代码出错， 通过map文件，找到「源代码」出错的位置， 快速定位错误，便于调试<br>
+4. 怎么用？<br>  
+
+````js
+devTool：  none / eval / eval-cheap-source-map/source-map ....
+1. 开发模式：
+    // 只有「 行 」的映射关系， 速度快
+    module.export = {
+        mode: "development"
+        devtool: "cheap-module-source-map"
+    }
+2. 生产环境
+     // 「 行和列 」的映射关系
+    module.export = {
+        mode: "production"
+        devtool: "source-map"
+    }
+
+````
+
+# 2. 提升「打包构建速度」
