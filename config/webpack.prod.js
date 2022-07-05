@@ -116,5 +116,6 @@ module.exports = {
         open: true, // 是否自动打开浏览器
     },
     // 模式
-    mode: 'development'
+    mode: 'development',
+    devtool: "source-map"
 }

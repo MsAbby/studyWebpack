@@ -159,7 +159,8 @@ module.export = {
 2. 解决： link标签加载css， 性能比较好<br/>
 3. 下载：  npm install mini-css-extract-plugin -D <br/>
 4. 目的： js和css分离<br/>
-````
+
+````js
 module: {
     // 执行顺序： 从下到上
     rules: [
@@ -180,6 +181,7 @@ plugins: [
 1. 下载包： npm install postcss-loader postcss postcss-preset-env -D<br/>
 2. 配置为止： 在css-loader 后面， 在less/scss/stylus-loader前面<br/>
 3. 对象形式： <br/>
+
 ````js
 {
     test: /\.less$/, 
@@ -202,6 +204,7 @@ plugins: [
 
 # 生产模式 - 封装loader函数（重复代码处理）
 1. 抽取公共代码， 封装成函数
+
 ````js
 // 封装处理样式的loader
 function getStyleLoader(params) {
@@ -243,21 +246,21 @@ plugins: [
 ````
 
 # 生产模式 - html压缩
-1. 生产环境： html 和 js 默认开启了压缩， 不需要进行配置
+1. 生产环境： html 和 js 默认开启了压缩， 不需要进行配置<br>
 
 
 
 ==========================================================  webpack 高级配置  =====================================================
 
-> 1. 提升 「 开发体验 」
-> 2. 提升 「 打包构建速度 」
-> 3. 减少 「 代码体积 」
-> 4. 优化 「 运行代码性能 」
-> 为什么 - 是什么 - 怎么用
+> 1. 提升 「 开发体验 」<br>
+> 2. 提升 「 打包构建速度 」<br>
+> 3. 减少 「 代码体积 」<br>
+> 4. 优化 「 运行代码性能 」<br>
+> 为什么 - 是什么 - 怎么用<br>
 
 # 1. SourceMap
 
-1. 为什么？    代码构建后，如果文件出错，找不到具体的行和列
+1. 为什么？    代码构建后，如果文件出错，找不到具体的行和列<br>
 2. 是什么？    生成一个map文件， 内容是「 源代码 」和 「 构建后的代码 」 每一行和每一列 的映射关系；<br>
 3. 解决什么？   构建代码出错， 通过map文件，找到「源代码」出错的位置， 快速定位错误，便于调试<br>
 4. 怎么用？<br>  
@@ -271,7 +274,7 @@ devTool：  none / eval / eval-cheap-source-map/source-map ....
         devtool: "cheap-module-source-map"
     }
 2. 生产环境
-     // 「 行和列 」的映射关系
+    // 「 行和列 」的映射关系
     module.export = {
         mode: "production"
         devtool: "source-map"
@@ -279,4 +282,78 @@ devTool：  none / eval / eval-cheap-source-map/source-map ....
 
 ````
 
-# 2. 提升「打包构建速度」
+# 2. 提升「打包构建速度」- hotModuleReplacement(仅开发模式)
+
+1. 为什么？    开发时， 改某一模块代码， 所有文件要重新打包编译(整个页面全部刷新)， 速度变慢<br>
+2. 是什么？    `hotModuleReplacement`（热模块配置）, 程序运行中, 替换、添加/删除模块， 无需重新加载整个页面<br>
+3. 怎么用？ <br>
+
+````js
+devServer: {
+    hot: false // 热模块开启还是关闭： true： 开启， false: 关闭
+},
+// 判断是佛欧支持hmr功能
+if (module.hot) {
+    module.hot.accept('./js', function() {
+        console.log('iii')
+    })
+}
+````
+
+# 3. OneOf(开发和生产模式)
+1. 为什么？   打包时， 每个文件都会经过「所有loader」处理， 虽然因为正则， 实际没有处理上， 但是都经过一遍， 比较慢<br>
+2. 是什么？   只能匹配一个loader, 剩下就不匹配了<br>
+3. 怎么用？
+````js
+module: {
+    rules: [
+        {
+            // 每个文件只能被其中一个loader处理
+            oneOf: [
+                {
+                    test: /\.css$/, // 仅监测css文件
+                    use: ['style-loader', 'css-loader'] // 执行顺序「从右到左」
+                },
+                {
+                    test: /\.less$/, 
+                    use: ['style-loader', 'css-loader', 'less-loader'] // 执行顺序「从右到左」
+                },
+                {
+                    test: /\.s[ac]ss$/, 
+                    use: ['style-loader', 'css-loader', 'sass-loader'] // 执行顺序「从右到左」
+                },
+                {
+                    test: /\.styl$/,
+                    use: ['style-loader', 'css-loader', 'stylus-loader'] // 执行顺序「从右到左」
+                },
+                {
+                    test: /\.(png|jpe?g|gif|webp|svg)$/, 
+                    type: 'asset', // 转base64
+                    parser: {
+                        dataUrlCondition: {
+                            maxSize: 10 * 1024
+                        }
+                    },
+                    generator: {
+                        // 输出图片名称
+                        filename: '/images/[hash][ext][query]'
+                    }
+                    },
+                {
+                    test: /\.(tts|woff)$/,
+                    type: 'asset/resource', // 原名字输出
+                    generator: {
+                        // 输出图片名称
+                        filename: '/media/[hash][ext][query]'
+                    }
+                },
+                {
+                    test: /\.js$/, 
+                    exclude: /node_modules/, // 排除的文件
+                    loader: "babel-loader"
+                }
+            ]
+        }
+    ]
+}
+````

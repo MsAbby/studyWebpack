@@ -79,7 +79,9 @@ module.exports = {
         host: 'localhost', // 开启服务器域名
         port: 8080,
         open: true, // 是否自动打开浏览器
+        hot: false // 热模块开启还是关闭： true： 开启， false: 关闭
     },
     // 模式
-    mode: 'development'
+    mode: 'development',
+    devtool: 'cheap-module-source-map'
 }
