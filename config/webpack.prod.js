@@ -100,7 +100,8 @@ module.exports = {
     plugins: [
         new ESLintWebpackPlugin({
             // 检测哪些文件
-            context: path.resolve(__dirname, '../src')
+            context: path.resolve(__dirname, '../src'),
+            exclude: "node_modules", // 排除的文件
         }),
         new HtmlWebpckPlugin({
             template: path.resolve(__dirname, '../public/index.html')

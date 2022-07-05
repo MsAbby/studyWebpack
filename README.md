@@ -115,11 +115,11 @@ module.export = {
 ````
 
 
-# 处理html(手动引入的变成自动引入)
+## 处理html(手动引入的变成自动引入)
  ## 自动引入打包输出的资源
 1. htmlwebpackPlugin<br/>
 
-# 自动化
+## 自动化
    ## 每次改完代码后，要手动编译才能生效，比较麻烦
 1. dev-server:   npm install dev-server -D<br/>
 ````
@@ -133,15 +133,15 @@ module.export = {
 
 
 
-=================================================================生产相关=======================================================
+=========================================================== 生产相关 ===================================================
 
 
 
 
 
 
-# 生产模式
-   ## 上线操作
+## 生产模式
+   ### 上线操作
 1. webpack.dev.js: : 
 2. webpack.prod.js: 
 3. package.json 文件修改
@@ -154,7 +154,7 @@ module.export = {
     },
     ````
 
-# 生产模式 - css处理(提取css)
+## 生产模式 - css处理(提取css)
 1. 原因： css打包进js, js加载时，创建style标签生成样式， 屏幕是闪屏现象(把style-loader替换成minicssStrctPlugin)<br/>
 2. 解决： link标签加载css， 性能比较好<br/>
 3. 下载：  npm install mini-css-extract-plugin -D <br/>
@@ -177,7 +177,7 @@ plugins: [
 ],
 ````
 
-# 生产模式 - css兼容性处理
+## 生产模式 - css兼容性处理
 1. 下载包： npm install postcss-loader postcss postcss-preset-env -D<br/>
 2. 配置为止： 在css-loader 后面， 在less/scss/stylus-loader前面<br/>
 3. 对象形式： <br/>
@@ -202,7 +202,7 @@ plugins: [
 },
 ````
 
-# 生产模式 - 封装loader函数（重复代码处理）
+## 生产模式 - 封装loader函数（重复代码处理）
 1. 抽取公共代码， 封装成函数
 
 ````js
@@ -232,7 +232,8 @@ module: {
             },
 ````
 
-# 生产模式 - css压缩
+## 生产模式 - css压缩
+
 1. 下载： npm install css-minimizer-webpack-plugin -D <br>
 2. 引用  <br>
 3. plugin调用<br>
@@ -245,20 +246,21 @@ plugins: [
 
 ````
 
-# 生产模式 - html压缩
+## 生产模式 - html压缩
 1. 生产环境： html 和 js 默认开启了压缩， 不需要进行配置<br>
 
 
 
-==========================================================  webpack 高级配置  =====================================================
+=================================================  webpack 高级配置  ===============================================
 
 > 1. 提升 「 开发体验 」<br>
 > 2. 提升 「 打包构建速度 」<br>
 > 3. 减少 「 代码体积 」<br>
 > 4. 优化 「 运行代码性能 」<br>
-> 为什么 - 是什么 - 怎么用<br>
 
-# 1. SourceMap
+> 答题思路： 为什么 - 是什么 - 怎么用<br>
+
+## 1. SourceMap
 
 1. 为什么？    代码构建后，如果文件出错，找不到具体的行和列<br>
 2. 是什么？    生成一个map文件， 内容是「 源代码 」和 「 构建后的代码 」 每一行和每一列 的映射关系；<br>
@@ -282,7 +284,7 @@ devTool：  none / eval / eval-cheap-source-map/source-map ....
 
 ````
 
-# 2. 提升「打包构建速度」- hotModuleReplacement(仅开发模式)
+## 2. 提升「打包构建速度」- hotModuleReplacement(仅开发模式)
 
 1. 为什么？    开发时， 改某一模块代码， 所有文件要重新打包编译(整个页面全部刷新)， 速度变慢<br>
 2. 是什么？    `hotModuleReplacement`（热模块配置）, 程序运行中, 替换、添加/删除模块， 无需重新加载整个页面<br>
@@ -292,7 +294,7 @@ devTool：  none / eval / eval-cheap-source-map/source-map ....
 devServer: {
     hot: false // 热模块开启还是关闭： true： 开启， false: 关闭
 },
-// 判断是佛欧支持hmr功能
+// 判断是支持hmr功能
 if (module.hot) {
     module.hot.accept('./js', function() {
         console.log('iii')
@@ -300,7 +302,8 @@ if (module.hot) {
 }
 ````
 
-# 3. OneOf(开发和生产模式)
+## 3. OneOf(开发和生产模式)
+
 1. 为什么？   打包时， 每个文件都会经过「所有loader」处理， 虽然因为正则， 实际没有处理上， 但是都经过一遍， 比较慢<br>
 2. 是什么？   只能匹配一个loader, 剩下就不匹配了<br>
 3. 怎么用？
@@ -356,4 +359,26 @@ module: {
         }
     ]
 }
+````
+## 4. include/exclude（针对第三方插件的js文件）
+
+1. 为什么？    开发时， 用到第三方插件， 会下载到node_module中， 这些文件「不需要编译，可以直接使用」，所以要排除文件 <br>
+2. 是什么？    include:  包含；     exclude: 排除   （2选一）
+3. 怎么用？
+
+````js
+// 只针对 「js」文件, 同时使用「会报错」
+{
+    test: /\.js$/, 
+    exclude: /node_modules/, // 排除的文件
+    // include: path.resolve(__dirname, '../src')  // 处理包含的文件
+    loader: "babel-loader"
+}
+plugins: [
+    new ESLintWebpackPlugin({
+        // 检测哪些文件
+        context: path.resolve(__dirname, '../src'),
+        exclude: "node_modules", // 排除的文件
+    }),
+],
 ````
