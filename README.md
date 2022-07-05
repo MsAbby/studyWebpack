@@ -414,4 +414,42 @@ plugins: [
 ],
 ````
 
-## 6. 多进程打包
+## 6. 多进程打包 thread(生产环境)
+1. 为什么？  项目庞大， 打包速度变慢， 提升js打包速度（eslint, babel, terser）， 采用多线程打包
+2. 是什么？  多个进程， 同时干一件事， 速度快， （缺点：每个进程启动600ms左右开销）
+3. 下载：    npm install thread-loader -D
+3. 怎么用？ 
+````js
+const os = require('os')
+const threads = os.cpus().length; // cpu核数
+{
+    test: /\.js$/, 
+    exclude: /node_modules/, // 排除的文件
+    use: [
+        {
+            loader: 'thread-loader',
+            options: {
+                works: threads  // 进程数量
+            }
+        },
+        {
+            loader: 'babel-loader',
+            options: {
+                cacheDirectory: true, // 开启babel缓存
+                cacheCompression: false // 关闭缓存文件压缩
+            }
+        }
+    ]
+}
+plugins: [
+    new ESLintWebpackPlugin({
+        // 检测哪些文件
+        context: path.resolve(__dirname, '../src'),
+        threads // 开启多进程 和 设置进程数量
+    }),
+    new TerserWebpackPlugin({
+        parallet: threads // 开启多进程  和设置进程数量
+    })
+],
+
+````

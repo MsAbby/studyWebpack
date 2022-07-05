@@ -1,9 +1,13 @@
+const os = require('os')
 const ESLintWebpackPlugin = require("eslint-webpack-plugin");
 const path = require("path");
 const Eslintrc = require("./.eslintrc");
 const HtmlWebpckPlugin = require('html-webpack-plugin')
 const miniCssExtracPlugin = require('mini-css-extract-plugin') // 替换style-loader
 const CssMinimizerWebpckPlugin = require('css-minimizer-webpack-plugin')
+const TerserWebpackPlugin = require('terser-webpack-plugin')
+
+const threads = os.cpus().length; // cpu核数
 
 // 封装处理样式的loader
 function getStyleLoader(params) {
@@ -91,7 +95,21 @@ module.exports = {
             {
                 test: /\.js$/, 
                 exclude: /node_modules/, // 排除的文件
-                loader: "babel-loader"
+                use: [
+                    {
+                        loader: 'thread-loader',
+                        options: {
+                            works: threads // 进程数量
+                        }
+                    },
+                   {
+                       loader: 'babel-loader',
+                       options: {
+                           cacheDirectory: true, // 开启babel缓存
+                           cacheCompression: false // 关闭缓存文件压缩
+                       }
+                   }
+                ]
             }
             
         ]
@@ -102,12 +120,16 @@ module.exports = {
             // 检测哪些文件
             context: path.resolve(__dirname, '../src'),
             exclude: "node_modules", // 排除的文件
+            threads // 开启多进程 和 设置进程数量
         }),
         new HtmlWebpckPlugin({
             template: path.resolve(__dirname, '../public/index.html')
         }),
         new miniCssExtracPlugin(),
-        new CssMinimizerWebpckPlugin()
+        new CssMinimizerWebpckPlugin(),
+        new TerserWebpackPlugin({
+            parallet: threads // 开启多进程  和设置进程数量
+        })
     ],
 
     // 开启服务器
