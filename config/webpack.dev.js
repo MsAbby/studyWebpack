@@ -59,7 +59,11 @@ module.exports = {
                 test: /\.js$/, 
                 exclude: /node_modules/, // 排除的文件
                 // include: path.resolve(__dirname, '../src')  // 处理包含的文件
-                loader: "babel-loader"
+                loader: "babel-loader",
+                options: {
+                    cacheDirectory: true, // 开启 「babel」缓存
+                    cacheCompression: false /// 关闭缓存文件压缩
+                }
             }
             
         ]
@@ -70,6 +74,9 @@ module.exports = {
             // 检测哪些文件
             context: path.resolve(__dirname, '../src'),
             exclude: "node_modules", // 排除的文件
+            cache: true, // eslint 开启缓存
+            cacheLocation: path.resolve(__dirname, '../node_modules/.cache/eslintcache')
+
         }),
         new HtmlWebpckPlugin({
             template: path.resolve(__dirname, '../public/index.html')

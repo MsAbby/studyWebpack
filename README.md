@@ -382,3 +382,36 @@ plugins: [
     }),
 ],
 ````
+
+## 5. eslint 和 babel 的缓存
+
+1. 为什么？  每次打包js, 都要经过eslint检查  和  babel编译，速度慢
+2. 是什么？  对 「 eslint检查 」  和 「 babel编译结果」，  进行缓存， 只对修改的文件进行检查编译
+3. 作用？    针对「第二次打包」， 不用打包所有， 速度变快
+4. 怎么用？  
+
+````js
+
+// loader
+{
+    test: /\.js$/, 
+    exclude: /node_modules/, // 排除的文件
+    loader: "babel-loader",
+    options: {
+        cacheDirectory: true, // 开启 「babel」缓存
+        cacheCompression: false /// 关闭缓存文件压缩
+    }
+}
+plugins: [
+    new ESLintWebpackPlugin({
+        // 检测哪些文件
+        context: path.resolve(__dirname, '../src'),
+        exclude: "node_modules", // 排除的文件
+        cache: true,        // eslint 开启缓存
+        cacheLocation: path.resolve(__dirname, '../node_modules/.cache/eslintcache')  // 缓存位置
+
+    }),
+],
+````
+
+## 6. 多进程打包
