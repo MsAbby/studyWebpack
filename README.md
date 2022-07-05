@@ -1,17 +1,21 @@
-# 学习webpack
+# 学习webpack基本配置
 1. 新建入口文件：         src/main.js<br/>
 2. 初始化package.json:   npm i<br/>
 3. 安装webpack:          npm install webpack webpack-cli -D<br/>
 4. 创建:                 webpack.config.js 文件<br/>
-5. 启动：                 npx webpack<br/>
+5. 启动：                npx webpack<br/>
+    > webpack ： 直接打包输出
+    > webpack server 启动开发服务器， 内存编译打包，没有输出
 
 # webpack.config.js
 1. 入口： entry<br/>
 2. 出口： output<br/>
 3. 加载器： module: {}(loader)<br/>
 4. 插件： plugins: []<br/>
-5. 模式： mode<br/>
-    > mode: development: 1. 编译代码， 能在浏览器中运行; 2. 代码质量检查<br/>
+5. 服务器： devServer: {}<br/>
+6. 环境模式： mode<br/>
+    > mode: development: 1. 编译代码， 能在浏览器中「自动」运行; 2. 代码质量检查<br/>
+    > mode: production:  1. 编译代码， 优化输出<br/>
 
 # 处理样式资源
 1. style-loader    npm install style-loader -D   在js中找到css样式， 通过创建style 标签，添加到html中<br/>
@@ -129,7 +133,13 @@ module.export = {
 
 
 
-------------------------- 生产相关 --------------------
+=================================================================生产相关=======================================================
+
+
+
+
+
+
 # 生产模式
    ## 上线操作
 1. webpack.dev.js: : 
@@ -144,7 +154,7 @@ module.export = {
     },
     ````
 
-# 生产模式 - css处理
+# 生产模式 - css处理(提取css)
 1. 原因： css打包进js, js加载时，创建style标签生成样式， 屏幕是闪屏现象(把style-loader替换成minicssStrctPlugin)<br/>
 2. 解决： link标签加载css， 性能比较好<br/>
 3. 下载：  npm install mini-css-extract-plugin -D <br/>
@@ -189,4 +199,59 @@ plugins: [
     ] // 执行顺序「从右到左」
 },
 ````
+
+# 生产模式 - 封装loader函数（重复代码处理）
+1. 抽取公共代码， 封装成函数
+````
+// 封装处理样式的loader
+function getStyleLoader(params) {
+    return [
+        miniCssExtracPlugin.loader, 
+        'css-loader',
+        {
+            loader: 'postcss-loader',
+            options: {
+                postcssOptions: {
+                    plugins: ['postcss-preset-env'] // 解决大多数样式的兼容性
+                }
+            }
+        },
+        params
+    ].filter(Boolean) // 过滤undefined的值（参数传过来为null时自动过滤）
+}
+module: {
+        // 执行顺序： 从下到上
+        rules: [
+            {
+                test: /\.less$/, 
+                // use: ['style-loader', 'css-loader', 'less-loader'] // 执行顺序「从右到左」
+                use: getStyleLoader('less-loader') // 执行顺序「从右到左」
+            },
+````
+
+# 生产模式 - css压缩
+1. 下载： npm install css-minimizer-webpack-plugin -D <br>
+2. 引用  <br>
+3. plugin调用<br>
+````
+const CssMinimizerWebpckPlugin = require('css-minimizer-webpack-plugin')
+
+plugins: [
+    new CssMinimizerWebpckPlugin()
+],
+
+````
+
+# 生产模式 - html压缩
+1. 生产环境： html 和 js 默认开启了压缩， 不需要进行配置
+
+
+
+==========================================================  webpack 高级配置  =====================================================
+
+> 1. 提升 「 开发体验 」
+> 2. 提升 「 打包构建速度 」
+> 3. 减少 「 代码体积 」
+> 4. 优化 「 运行代码性能 」
+> 为什么 - 是什么 - 怎么用
 

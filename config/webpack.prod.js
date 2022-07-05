@@ -3,7 +3,24 @@ const path = require("path");
 const Eslintrc = require("./.eslintrc");
 const HtmlWebpckPlugin = require('html-webpack-plugin')
 const miniCssExtracPlugin = require('mini-css-extract-plugin') // 替换style-loader
+const CssMinimizerWebpckPlugin = require('css-minimizer-webpack-plugin')
 
+// 封装处理样式的loader
+function getStyleLoader(params) {
+    return [
+        miniCssExtracPlugin.loader, 
+        'css-loader',
+        {
+            loader: 'postcss-loader',
+            options: {
+                postcssOptions: {
+                    plugins: ['postcss-preset-env'] // 解决大多数样式的兼容性
+                }
+            }
+        },
+        params
+    ].filter(Boolean) // 过滤undefined的值（参数传过来为null时自动过滤）
+}
 module.exports = {
     // 入口
     entry: './src/main.js', // 相对路径（相对于运行代码的目录）
@@ -38,53 +55,17 @@ module.exports = {
             {
                 test: /\.less$/, 
                 // use: ['style-loader', 'css-loader', 'less-loader'] // 执行顺序「从右到左」
-                use: [
-                    miniCssExtracPlugin.loader,
-                    'css-loader',
-                    {
-                        loader: 'postcss-loader',
-                        options: {
-                            postcssOptions: {
-                                plugins: ['postcss-preset-env'] // 解决大多数样式的兼容性
-                            }
-                        }
-                    },
-                    'less-loader'
-                ] // 执行顺序「从右到左」
+                use: getStyleLoader('less-loader') // 执行顺序「从右到左」
             },
             {
                 test: /\.s[ac]ss$/, 
                 // use: ['style-loader', 'css-loader', 'sass-loader'] // 执行顺序「从右到左」
-                use: [
-                    miniCssExtracPlugin.loader,
-                    'css-loader',
-                    {
-                        loader: 'postcss-loader',
-                        options: {
-                            postcssOptions: {
-                                plugins: ['postcss-preset-env'] // 解决大多数样式的兼容性
-                            }
-                        }
-                    },
-                    'sass-loader'
-                ] // 执行顺序「从右到左」
+                use:  getStyleLoader('sass-loader')
             },
             {
                 test: /\.styl$/,
                 // use: ['style-loader', 'css-loader', 'stylus-loader'] // 执行顺序「从右到左」
-                use: [
-                    miniCssExtracPlugin.loader,
-                    'css-loader',
-                    {
-                        loader: 'postcss-loader',
-                        options: {
-                            postcssOptions: {
-                                plugins: ['postcss-preset-env'] // 解决大多数样式的兼容性
-                            }
-                        }
-                    },
-                    'stylus-loader'
-                ] // 执行顺序「从右到左」
+                use:  getStyleLoader('stylus-loader')
             },
             {
                 test: /\.(png|jpe?g|gif|webp|svg)$/, 
@@ -124,7 +105,8 @@ module.exports = {
         new HtmlWebpckPlugin({
             template: path.resolve(__dirname, '../public/index.html')
         }),
-        new miniCssExtracPlugin()
+        new miniCssExtracPlugin(),
+        new CssMinimizerWebpckPlugin()
     ],
 
     // 开启服务器
