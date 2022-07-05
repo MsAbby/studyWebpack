@@ -5,7 +5,8 @@ const Eslintrc = require("./.eslintrc");
 const HtmlWebpckPlugin = require('html-webpack-plugin')
 const miniCssExtracPlugin = require('mini-css-extract-plugin') // 替换style-loader
 const CssMinimizerWebpckPlugin = require('css-minimizer-webpack-plugin')
-const TerserWebpackPlugin = require('terser-webpack-plugin')
+const TerserWebpackPlugin = require('terser-webpack-plugin');
+const ImageMinimizerPlugin = require('image-minimizer-webpack-plugin');
 
 const threads = os.cpus().length; // cpu核数
 
@@ -106,7 +107,8 @@ module.exports = {
                        loader: 'babel-loader',
                        options: {
                            cacheDirectory: true, // 开启babel缓存
-                           cacheCompression: false // 关闭缓存文件压缩
+                           cacheCompression: false, // 关闭缓存文件压缩
+                           plugins: ['@babel/plugin-transform-runtime'] // 减少代码体积
                        }
                    }
                 ]
@@ -126,9 +128,36 @@ module.exports = {
             template: path.resolve(__dirname, '../public/index.html')
         }),
         new miniCssExtracPlugin(),
+        // css压缩
         new CssMinimizerWebpckPlugin(),
+        // 开启 js压缩
         new TerserWebpackPlugin({
             parallet: threads // 开启多进程  和设置进程数量
+        }),
+        // 开启 图片 压缩
+        new ImageMinimizerPlugin({
+            minimizer: {
+                implementation: ImageMinimizerPlugin.imageminGenerate,
+                options: {
+                    plugins: [
+                        ['gifsicle', {interlaced: true}],
+                        ['jpegtran', {progressive: true}],
+                        ['optipng', {optimizationLevel: 5}],
+                        ['svgo', {
+                            plugins: [
+                                "preset-default",
+                                "prefixIds",
+                                {
+                                    name: "sortAttrs",
+                                    params: {
+                                        xmlnsOrder: "alphabetical"
+                                    }
+                                }
+                            ]
+                        }]
+                    ]
+                }
+            }
         })
     ],
 

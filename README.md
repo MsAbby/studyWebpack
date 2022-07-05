@@ -1,4 +1,4 @@
-# 学习webpack基本配置
+## 学习webpack基本配置
 1. 新建入口文件：         src/main.js<br/>
 2. 初始化package.json:   npm i<br/>
 3. 安装webpack:          npm install webpack webpack-cli -D<br/>
@@ -7,7 +7,7 @@
     > webpack ： 直接打包输出
     > webpack server 启动开发服务器， 内存编译打包，没有输出
 
-# webpack.config.js
+## webpack.config.js
 1. 入口： entry<br/>
 2. 出口： output<br/>
 3. 加载器： module: {}(loader)<br/>
@@ -17,7 +17,7 @@
     > mode: development: 1. 编译代码， 能在浏览器中「自动」运行; 2. 代码质量检查<br/>
     > mode: production:  1. 编译代码， 优化输出<br/>
 
-# 处理样式资源
+## 处理样式资源
 1. style-loader    npm install style-loader -D   在js中找到css样式， 通过创建style 标签，添加到html中<br/>
 2. css-loader :    npm install css-loader -D     将css资源编译到commonjs模块的js中<br/>
 3. scss-loader:    npm install scss-loader node-scss -D<br/>
@@ -25,22 +25,22 @@
 5. less-loader:    npm install less-loader -D<br/>
 6. stylus-loader:  npm install stylus-loader -D<br/>
 
-# 处理图片资源
+## 1. 处理图片资源
 1. file-loader： npm i url-loader file-loader html-loader -D<br/>
 2. url-loader<br/>
 3. webpack5 不用配置： 激活1、2就可以了<br/>
 4. 图片优化<br/>
 
-# 修改打包输出js文件
+## 2. 修改打包输出js文件
 1. path: 所有文件<br/>
 2. filname: '/文件名/filename'<br/>
 
-# 自动清空打包内容
+## 3. 自动清空打包内容
 output: {<br/>
     clean: true<br/>
 }<br/>
 
-# 处理字体图标资源
+## 4. 处理字体图标资源
 <link rel='stylesheet' herf='./iconfont.css'><br/>
 ````
 module: {
@@ -53,7 +53,7 @@ module: {
 }
 ````
 
-# 其他资源
+## 5. 其他资源
 ````
 module: {
     rule: [
@@ -62,7 +62,7 @@ module: {
             type: 'assets/resource'
         }]}
 ````
-# 处理js资源(babel 处理js兼容性问题)
+## 6. 处理js资源(babel 处理js兼容性问题)
 
 > webpack 不认识任何es6语法<br/>
 > 先完成代码检查 eslint, 再由 babel做兼容性处理<br/>
@@ -115,11 +115,11 @@ module.export = {
 ````
 
 
-## 处理html(手动引入的变成自动引入)
+## 7. 处理html(手动引入的变成自动引入)
  ## 自动引入打包输出的资源
 1. htmlwebpackPlugin<br/>
 
-## 自动化
+## 8. 自动化
    ## 每次改完代码后，要手动编译才能生效，比较麻烦
 1. dev-server:   npm install dev-server -D<br/>
 ````
@@ -133,7 +133,7 @@ module.export = {
 
 
 
-=========================================================== 生产相关 ===================================================
+=============================================== 生产相关 ===============================================
 
 
 
@@ -251,7 +251,7 @@ plugins: [
 
 
 
-=================================================  webpack 高级配置  ===============================================
+==============================================  webpack 高级配置  ===========================================
 
 > 1. 提升 「 开发体验 」<br>
 > 2. 提升 「 打包构建速度 」<br>
@@ -284,7 +284,7 @@ devTool：  none / eval / eval-cheap-source-map/source-map ....
 
 ````
 
-## 2. 提升「打包构建速度」- hotModuleReplacement(仅开发模式)
+## 2. 提升「打包构建速度」- hotModuleReplacement (仅开发模式)
 
 1. 为什么？    开发时， 改某一模块代码， 所有文件要重新打包编译(整个页面全部刷新)， 速度变慢<br>
 2. 是什么？    `hotModuleReplacement`（热模块配置）, 程序运行中, 替换、添加/删除模块， 无需重新加载整个页面<br>
@@ -302,7 +302,7 @@ if (module.hot) {
 }
 ````
 
-## 3. OneOf(开发和生产模式)
+## 3. 提升「打包构建速度」 - OneOf (开发和生产模式)
 
 1. 为什么？   打包时， 每个文件都会经过「所有loader」处理， 虽然因为正则， 实际没有处理上， 但是都经过一遍， 比较慢<br>
 2. 是什么？   只能匹配一个loader, 剩下就不匹配了<br>
@@ -360,7 +360,7 @@ module: {
     ]
 }
 ````
-## 4. include/exclude（针对第三方插件的js文件）
+## 4. 提升「打包构建速度」 - include/exclude（针对第三方插件的js文件）
 
 1. 为什么？    开发时， 用到第三方插件， 会下载到node_module中， 这些文件「不需要编译，可以直接使用」，所以要排除文件 <br>
 2. 是什么？    include:  包含；     exclude: 排除   （2选一）
@@ -383,12 +383,12 @@ plugins: [
 ],
 ````
 
-## 5. eslint 和 babel 的缓存
+## 5. 提升「打包构建速度」- eslint 和 babel 的缓存
 
-1. 为什么？  每次打包js, 都要经过eslint检查  和  babel编译，速度慢
-2. 是什么？  对 「 eslint检查 」  和 「 babel编译结果」，  进行缓存， 只对修改的文件进行检查编译
-3. 作用？    针对「第二次打包」， 不用打包所有， 速度变快
-4. 怎么用？  
+1. 为什么？  每次打包js, 都要经过eslint检查  和  babel编译，速度慢 <br>
+2. 是什么？  对 「 eslint检查 」  和 「 babel编译结果」，  进行缓存， 只对修改的文件进行检查编译 <br>
+3. 作用？    针对「第二次打包」， 不用打包所有， 速度变快 <br>
+4. 怎么用？  <br>
 
 ````js
 
@@ -414,11 +414,12 @@ plugins: [
 ],
 ````
 
-## 6. 多进程打包 thread(生产环境)
-1. 为什么？  项目庞大， 打包速度变慢， 提升js打包速度（eslint, babel, terser）， 采用多线程打包
-2. 是什么？  多个进程， 同时干一件事， 速度快， （缺点：每个进程启动600ms左右开销）
-3. 下载：    npm install thread-loader -D
-3. 怎么用？ 
+## 6. 提升「打包构建速度」 -  多进程打包 thread(生产环境)
+1. 为什么？  项目庞大， 打包速度变慢， 提升js打包速度（eslint, babel, terser）， 采用多线程打包<br>
+2. 是什么？  多个进程， 同时干一件事， 速度快， （缺点：每个进程启动600ms左右开销）<br>
+3. 下载：    npm install thread-loader -D<br>
+4. 怎么用？ <br>
+
 ````js
 const os = require('os')
 const threads = os.cpus().length; // cpu核数
@@ -452,4 +453,90 @@ plugins: [
     })
 ],
 
+````
+
+## 7. 减少「代码体积」 -  tree shaking
+1. 为什么？   -----开发时， 定义了一些工具函数或引入第三方库， 但是我们只是使用了一小部分， 打包时，会把整个库打包进来， 体积太大<br>
+2. 是什么？   -----移除js中没有使用的代码 （依赖es module)
+3. 怎么用？   -----webpack 已经自动开启了这个功能， 无需配置
+
+## 8. 减少「代码体积」 -  babel （开发 / 生产模式都可以）
+1. 为什么？  ------babel 为每个文件都插入了辅助代码， 使体积过大（重复使用，重复引入）
+2. 是什么？  ------npm install @babel/plugin-transform-runtime: -D
+3. 怎么用？
+````js
+@babel/plugin-transform-runtime:  禁用babel 自动对每个文件的runtime注入， 而是引入@babel/plugin-transform-runtime, s使所有辅助代码从这里引用
+
+{
+    test: /\.js$/, 
+    exclude: /node_modules/, // 排除的文件
+    use: [
+        {
+            loader: 'babel-loader',
+            options: {
+                cacheDirectory: true, // 开启babel缓存
+                cacheCompression: false, // 关闭缓存文件压缩
+                plugins: ['@babel/plugin-transform-runtime'] // 减少代码体积
+            }
+        }
+    ]
+}
+
+````
+
+## 9. 减少「代码体积」 -  压缩图片
+1. 为什么？  -----图片引用过多， 体积变大， 请求速度比较慢 （在线图片的话就不需要）<br>
+2. 是什么？  -----image-minimizer-webpack-plugin: 用来压缩图片的插件<br>
+3. 下载？   -----npm install image-minimizer-webpack-plugin -D<br>
+4. 无损压缩  -----npm install imagemin-gifsicle imagemin-jpegtran imagemin-optipng imagemin-svgo -D<br>
+5. 有损压缩  ----- npm install imagemin-gifsicle imagemin-mozjpeg imagemin-pngquant imagemin-svgo -D<br>
+6. 怎么做？
+
+````js
+// 开启 图片 压缩
+        new ImageMinimizerPlugin({
+            minimizer: {
+                implementation: ImageMinimizerPlugin.imageminGenerate,
+                options: {
+                    plugins: [
+                        ['gifsicle', {interlaced: true}],
+                        ['jpegtran', {progressive: true}],
+                        ['optipng', {optimizationLevel: 5}],
+                        ['svgo', {
+                            plugins: [
+                                "preset-default",
+                                "prefixIds",
+                                {
+                                    name: "sortAttrs",
+                                    params: {
+                                        xmlnsOrder: "alphabetical"
+                                    }
+                                }
+                            ]
+                        }]
+                    ]
+                }
+            }
+        })
+````
+## 10 . 优化「代码运行性能」 -  code split
+1. 为什么？ ---- 打包在一个文件中，体积太大，所以要进行代码分割，加载需要的资源，资源快
+2. 是什么？ ---- 1.分割文件（生成多个js文件）， 2.按需加载
+3. 怎么用？
+
+````js
+// 1. 多入口 对应 多输出
+entry: {
+    app: './src/app.js',
+    main: './src/main.js'
+},
+output: [
+    path: path.resolve(__dirname, 'dist)
+    filename: "[name].js" // 以文件名自己命名
+],
+plugins: [
+    new HtmlWebpackPlugin({
+        template: path.resolve(__dirname, 'public/index.html)
+    })
+]
 ````
