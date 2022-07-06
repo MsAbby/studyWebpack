@@ -1,19 +1,19 @@
 ## 学习webpack基本配置
-1. 新建入口文件：         src/main.js<br/>
-2. 初始化package.json:   npm i<br/>
-3. 安装webpack:          npm install webpack webpack-cli -D<br/>
-4. 创建:                 webpack.config.js 文件<br/>
-5. 启动：                npx webpack<br/>
-    > webpack ： 直接打包输出
-    > webpack server 启动开发服务器， 内存编译打包，没有输出
+1. 新建入口文件：         ----src/main.js<br/>
+2. 初始化package.json:   ----npm i<br/>
+3. 安装webpack:          ----npm install webpack webpack-cli -D<br/>
+4. 创建:                 ----webpack.config.js 文件<br/>
+5. 启动：                ----npx webpack<br/>
+    > webpack ： ----直接打包输出
+    > webpack server ----启动开发服务器， 内存编译打包，没有输出
 
 ## webpack.config.js
-1. 入口： entry<br/>
-2. 出口： output<br/>
-3. 加载器： module: {}(loader)<br/>
-4. 插件： plugins: []<br/>
-5. 服务器： devServer: {}<br/>
-6. 环境模式： mode<br/>
+1. 入口： ----entry<br/>
+2. 出口： ----output<br/>
+3. 加载器： ----module: {}(loader)<br/>
+4. 插件： ----plugins: []<br/>
+5. 服务器： ----devServer: {}<br/>
+6. 环境模式： ----mode<br/>
     > mode: development: 1. 编译代码， 能在浏览器中「自动」运行; 2. 代码质量检查<br/>
     > mode: production:  1. 编译代码， 优化输出<br/>
 7. 所有的优化代码 / 压缩部分:   optimization： {// 压缩 minimizer : [], spliteChunks： {}} <br>
@@ -37,13 +37,15 @@
 2. filname: '/文件名/filename'<br/>
 
 ## 3. 自动清空打包内容
-output: {<br/>
-    clean: true<br/>
-}<br/>
+````js
+output: {
+    clean: true
+}
+````
 
 ## 4. 处理字体图标资源
 <link rel='stylesheet' herf='./iconfont.css'><br/>
-````
+````js
 module: {
     rule: [
         {
@@ -55,7 +57,7 @@ module: {
 ````
 
 ## 5. 其他资源
-````
+````js
 module: {
     rule: [
         {
@@ -156,10 +158,10 @@ module.export = {
     ````
 
 ## 生产模式 - css处理(提取css)
-1. 原因： css打包进js, js加载时，创建style标签生成样式， 屏幕是闪屏现象(把style-loader替换成minicssStrctPlugin)<br/>
-2. 解决： link标签加载css， 性能比较好<br/>
-3. 下载：  npm install mini-css-extract-plugin -D <br/>
-4. 目的： js和css分离<br/>
+1. 原因： ----css打包进js, js加载时，创建style标签生成样式， 屏幕是闪屏现象(把style-loader替换成minicssStrctPlugin)<br/>
+2. 解决： ----link标签加载css， 性能比较好<br/>
+3. 下载： ----npm install mini-css-extract-plugin -D <br/>
+4. 目的： ----js和css分离<br/>
 
 ````js
 module: {
@@ -179,9 +181,9 @@ plugins: [
 ````
 
 ## 生产模式 - css兼容性处理
-1. 下载包： npm install postcss-loader postcss postcss-preset-env -D<br/>
-2. 配置为止： 在css-loader 后面， 在less/scss/stylus-loader前面<br/>
-3. 对象形式： <br/>
+1. 下载包：  ----npm install postcss-loader postcss postcss-preset-env -D<br/>
+2. 配置为止： ----在css-loader 后面， 在less/scss/stylus-loader前面<br/>
+3. 对象形式： 
 
 ````js
 {
@@ -235,9 +237,10 @@ module: {
 
 ## 生产模式 - css压缩
 
-1. 下载： npm install css-minimizer-webpack-plugin -D <br>
-2. 引用  <br>
+1. 下载： ----npm install css-minimizer-webpack-plugin -D <br>
+2. 引用   <br>
 3. plugin调用<br>
+
 ````js
 const CssMinimizerWebpckPlugin = require('css-minimizer-webpack-plugin')
 
@@ -272,9 +275,9 @@ plugins: [
 
 ## 1. SourceMap
 
-1. 为什么？    代码构建后，如果文件出错，找不到具体的行和列<br>
-2. 是什么？    生成一个map文件， 内容是「 源代码 」和 「 构建后的代码 」 每一行和每一列 的映射关系；<br>
-3. 解决什么？   构建代码出错， 通过map文件，找到「源代码」出错的位置， 快速定位错误，便于调试<br>
+1. 为什么？    ----代码构建后，如果文件出错，找不到具体的行和列<br>
+2. 是什么？    ----生成一个map文件， 内容是「 源代码 」和 「 构建后的代码 」 每一行和每一列 的映射关系；<br>
+3. 解决什么？   ----构建代码出错， 通过map文件，找到「源代码」出错的位置， 快速定位错误，便于调试<br>
 4. 怎么用？<br>  
 
 ````js
@@ -296,9 +299,9 @@ devTool：  none / eval / eval-cheap-source-map/source-map ....
 
 ## 2. 提升「打包构建速度」- hotModuleReplacement (仅开发模式)
 
-1. 为什么？    开发时， 改某一模块代码， 所有文件要重新打包编译(整个页面全部刷新)， 速度变慢<br>
-2. 是什么？    `hotModuleReplacement`（热模块配置）, 程序运行中, 替换、添加/删除模块， 无需重新加载整个页面<br>
-3. 怎么用？ <br>
+1. 为什么？    ----开发时， 改某一模块代码， 所有文件要重新打包编译(整个页面全部刷新)， 速度变慢<br>
+2. 是什么？    ----`hotModuleReplacement`（热模块配置）, 程序运行中, 替换、添加/删除模块， 无需重新加载整个页面<br>
+3. 怎么用？
 
 ````js
 devServer: {
@@ -314,8 +317,8 @@ if (module.hot) {
 
 ## 3. 提升「打包构建速度」 - OneOf (开发和生产模式)
 
-1. 为什么？   打包时， 每个文件都会经过「所有loader」处理， 虽然因为正则， 实际没有处理上， 但是都经过一遍， 比较慢<br>
-2. 是什么？   只能匹配一个loader, 剩下就不匹配了<br>
+1. 为什么？   ----打包时， 每个文件都会经过「所有loader」处理， 虽然因为正则， 实际没有处理上， 但是都经过一遍， 比较慢<br>
+2. 是什么？   ----只能匹配一个loader, 剩下就不匹配了<br>
 3. 怎么用？
 ````js
 module: {
@@ -372,8 +375,8 @@ module: {
 ````
 ## 4. 提升「打包构建速度」 - include/exclude（针对第三方插件的js文件）
 
-1. 为什么？    开发时， 用到第三方插件， 会下载到node_module中， 这些文件「不需要编译，可以直接使用」，所以要排除文件 <br>
-2. 是什么？    include:  包含；     exclude: 排除   （2选一）
+1. 为什么？    ----开发时， 用到第三方插件， 会下载到node_module中， 这些文件「不需要编译，可以直接使用」，所以要排除文件 <br>
+2. 是什么？    ----include:  包含；     exclude: 排除   （2选一）
 3. 怎么用？
 
 ````js
@@ -395,10 +398,10 @@ plugins: [
 
 ## 5. 提升「打包构建速度」- eslint 和 babel 的缓存
 
-1. 为什么？  每次打包js, 都要经过eslint检查  和  babel编译，速度慢 <br>
-2. 是什么？  对 「 eslint检查 」  和 「 babel编译结果」，  进行缓存， 只对修改的文件进行检查编译 <br>
-3. 作用？    针对「第二次打包」， 不用打包所有， 速度变快 <br>
-4. 怎么用？  <br>
+1. 为什么？  ----每次打包js, 都要经过eslint检查  和  babel编译，速度慢 <br>
+2. 是什么？  ----对 「 eslint检查 」  和 「 babel编译结果」，  进行缓存， 只对修改的文件进行检查编译 <br>
+3. 作用？    ----针对「第二次打包」， 不用打包所有， 速度变快 <br>
+4. 怎么用？  
 
 ````js
 
@@ -425,9 +428,9 @@ plugins: [
 ````
 
 ## 6. 提升「打包构建速度」 -  多进程打包 thread(生产环境)
-1. 为什么？  项目庞大， 打包速度变慢， 提升js打包速度（eslint, babel, terser）， 采用多线程打包<br>
-2. 是什么？  多个进程， 同时干一件事， 速度快， （缺点：每个进程启动600ms左右开销）<br>
-3. 下载：    npm install thread-loader -D<br>
+1. 为什么？  ----项目庞大， 打包速度变慢， 提升js打包速度（eslint, babel, terser）， 采用多线程打包<br>
+2. 是什么？  ----多个进程， 同时干一件事， 速度快， （缺点：每个进程启动600ms左右开销）<br>
+3. 下载：    ----npm install thread-loader -D<br>
 4. 怎么用？ <br>
 
 ````js
