@@ -16,7 +16,7 @@
 6. 环境模式： mode<br/>
     > mode: development: 1. 编译代码， 能在浏览器中「自动」运行; 2. 代码质量检查<br/>
     > mode: production:  1. 编译代码， 优化输出<br/>
-7. 所有的优化代码 / 压缩部分:   optimization： {} <br>
+7. 所有的优化代码 / 压缩部分:   optimization： {// 压缩 minimizer : [], spliteChunks： {}} <br>
 
 ## 处理样式资源
 1. style-loader    npm install style-loader -D   在js中找到css样式， 通过创建style 标签，添加到html中<br/>
@@ -134,7 +134,7 @@ module.export = {
 
 
 
-======================================  生产相关  ===========================================
+===================================   生产相关  ======================================
 
 
 
@@ -249,14 +249,14 @@ plugins: [
 
 ## 生产模式 - html压缩
 
-生产环境： html 和 js 默认开启了压缩， 不需要进行配置<br>
+生产环境： html 和 js 默认开启了压缩， 不需要进行配置<br><br><br><br>
 
 
 
 
 
 
-===================================  webpack 高级配置  ===================================
+===================================  webpack 高级配置  ===================================<br><br><br>
 
 
 
@@ -529,7 +529,9 @@ plugins: [
             }
         })
 ````
-## 10 . 优化「代码运行性能」 -  code split
+<br>
+
+## 1 . 优化「代码运行性能」 -  code split
 
 1. 为什么？ ---- 打包在一个文件中，体积太大，所以要进行代码分割，加载需要的资源，资源快
 2. 是什么？ ---- 1.分割文件（生成多个js文件）， 2.按需加载
@@ -565,7 +567,7 @@ optimization: {
             defaultVendors: { // 组名
                 test: //
             },
-            default: {
+            default: { // 多入口
                 minSize: 0,
                 minChunks: 2,
                 priority: -20,
@@ -574,4 +576,114 @@ optimization: {
         }
     }
 }
+
+
+// 3. 按需加载， 动态导入模块
+document.getElementById('#btn).onclick = ()=>{
+    import('./count.js).then(res => {
+
+    }).catch(err => {})
+}
+
+
+// 4. 按需加载， 动态导入模块-起名
+document.getElementById('#btn).onclick = ()=>{
+    import(/*webpackChunkName*/'./count.js).then(res => {
+
+    }).catch(err => {})
+}
+output: {
+    // 给打包输出的其他文件命名（动态加载后的）
+    chunkFileName: 'static/[name].js"
+}
+
+
+// 5. 统一命名
+
+output: {
+    fileName: 'static/[name.js]'
+    // 给打包输出的其他文件命名（动态加载后的）
+    chunkFileName: 'static/[name].chunk.js"
+    // 图片、字体 通过 ：type: assets
+    assetModuleFilname: "static/media/[hash:10][ext][query]"
+}
+````
+
+## 2 . 优化「代码运行性能」 -  preload / prefetch
+1. 为什么？    ----代码分割、动态导入， 加载速度不好， 若资源大，会明显感觉卡顿<br>
+2. preload？  ----告诉浏览器，「 立即加载 」（优先级高， 只加载当前资源）；<br>
+3. prefetch:  ----告诉浏览器「 空闲 」时，才开始加载资源（可以加载下一页面的资源）<br>
+4. 共同点？     ---- 都只「加载」资源， 并不执行， 都有缓存<br>
+5. 缺点？       ---- 兼容性差<br>
+6. 下载？       ----npm i @vue/preload-webpack-plugin -D<br>
+
+````js
+new PreloadWebpackPlugin({
+    // rel: 'preload',
+    // as: 'script'
+    rel: 'prefetch'
+})
+````
+
+## 3 . 优化「代码运行性能」 -  文件名缓存
+1. 模块间相互依赖， 一个依赖的文件修改，与他相关的所有文件名都会变化
+````js
+optimization: {
+    // 压缩的
+    minimizer: []，
+    // 代码切割的
+    splitChunks: {},
+    // 文件依赖的文件名缓存
+    runtimeChunk: {
+        name: (entrypoint) => `runtime~${entrypoint.name}`
+    }
+}
+````
+
+## 4 . 优化「代码运行性能」 -  兼容性问题core.js
+1. 为什么？   ---- babel对js兼容性处理了， 将es6语法转换， 但是， 异步函数，promise对象，数组的一些方法，无法处理<br>
+2. corjs?    ---- es6以及以上api 的polyfill<br>
+3. polyfill? ---- 垫片/补丁， 用社区上提供的代码，让在不兼容某些新特性的浏览器上， 使用该新特性   l<br>
+4. 怎么做？
+
+````js
+ 全部加载---- npm install core-js
+ 手动按需加载 ---- import "core-js/es/promise"
+ 自动引入 ---- babel 智能预设
+
+ module.export = {
+     preset: [
+         "@babel/preset-env",
+         {
+            useBuiltIn: 'usage' // 按需加载core-js( 自动分析 兼容性的js)
+            corejs: 3
+         }
+     ]
+ }
+
+````
+
+## 5. 优化「代码运行性能」 -  pwa(离线)
+1. 为什么？ ----开发webapp, 一旦断网， 无法访问<br>
+2. 渐进式网络应用程序（workbox-webpack-plugin）
+3. 下载？   ---- cnpm install workbox-webpack-plugin -D<br>
+3. 怎么做？
+
+````js
+new WorkboxWebpackPlugin.GenerateSW({
+    clientsClaim: true,
+    skipWaiting: true
+})
+
+// main.js中要注册
+if ('serviceWorker' in navigator) {
+   window.addEventListener('load', () => {
+     navigator.serviceWorker.register('/service-worker.js').then(registration => {
+       console.log('SW registered: ', registration);
+     }).catch(registrationError => {
+       console.log('SW registration failed: ', registrationError);
+     });
+   });
+ }
+
 ````

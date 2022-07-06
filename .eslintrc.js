@@ -18,5 +18,7 @@ module.exports = {
         'no-var': 2, // 不能使用 var 定义变量
     },
     // 4. 继承其他规则
-    extends: []
+    extends: [],
+    // 解决动态导入语法报错
+    plugin: ["import"]
 }

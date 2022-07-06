@@ -161,6 +161,14 @@ module.exports = {
         })
     ],
 
+    //  优化和压缩
+    optimization: {
+        // 压缩处理
+        minimizer : [], 
+        // 代码切割处理
+        spliteChunks: {}
+    },
+
     // 开启服务器
     devServer: {
         host: 'localhost', // 开启服务器域名

@@ -2,6 +2,8 @@ const ESLintWebpackPlugin = require("eslint-webpack-plugin");
 const path = require("path");
 const Eslintrc = require("../.eslintrc");
 const HtmlWebpckPlugin = require('html-webpack-plugin')
+const PreloadWebpackPlugin = require('@vue/preload-webpack-plugin')
+const WorkboxWebpackPlugin = require('workbox-webpack-plugin')
 
 module.exports = {
     // 入口
@@ -80,6 +82,15 @@ module.exports = {
         }),
         new HtmlWebpckPlugin({
             template: path.resolve(__dirname, '../public/index.html')
+        }),
+        new PreloadWebpackPlugin({
+            // rel: 'preload',
+            // as: 'script'
+            rel: 'prefetch'
+        }),
+        new WorkboxWebpackPlugin.GenerateSW({
+            clientsClaim: true,
+            skipWaiting: true
         })
     ],
 
