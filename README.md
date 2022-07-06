@@ -16,6 +16,7 @@
 6. 环境模式： mode<br/>
     > mode: development: 1. 编译代码， 能在浏览器中「自动」运行; 2. 代码质量检查<br/>
     > mode: production:  1. 编译代码， 优化输出<br/>
+7. 所有的优化代码 / 压缩部分:   optimization： {} <br>
 
 ## 处理样式资源
 1. style-loader    npm install style-loader -D   在js中找到css样式， 通过创建style 标签，添加到html中<br/>
@@ -529,6 +530,7 @@ plugins: [
         })
 ````
 ## 10 . 优化「代码运行性能」 -  code split
+
 1. 为什么？ ---- 打包在一个文件中，体积太大，所以要进行代码分割，加载需要的资源，资源快
 2. 是什么？ ---- 1.分割文件（生成多个js文件）， 2.按需加载
 3. 怎么用？
@@ -548,4 +550,28 @@ plugins: [
         template: path.resolve(__dirname, 'public/index.html)
     })
 ]
+
+// 2. 提取公共模块（防止重复引入）-公共模块单独打包
+
+optimization: {
+    // 所有的优化代码 / 压缩部分
+    // 代码分割配置
+    splitChunks: {
+        chunks: "all", // 对所有模块分割
+        // 以下是默认配置
+        minSize: 20000, // 分割代码最小的大小
+        minnChunks: 1, // 至少被引用的次数，满足条件才会代码分割
+        cacheGroup: { // 组， 哪些模块打包到一个组
+            defaultVendors: { // 组名
+                test: //
+            },
+            default: {
+                minSize: 0,
+                minChunks: 2,
+                priority: -20,
+                reuseExistingChunk: true
+            }
+        }
+    }
+}
 ````
